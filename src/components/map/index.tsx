@@ -9,14 +9,27 @@ import {useGeographic} from 'ol/proj';
 
 import styled from 'styled-components';
 import 'ol/ol.css';
+import useSWR from 'swr';
+import { useGetPlaces } from '../../services/getMaps';
 
 const MapBlock = () => {
-    useGeographic();
-
+    useGeographic();    
     const mapContainerRef = useRef(null);
-    const places = [[-48.2772, -18.9146],[-47.8825, -15.7939]]
-    const point = new Point(places[0])
+    const { places, isLoading, isError }  = useGetPlaces();
 
+
+
+
+    console.log(places);
+
+    const mapPoints = !isLoading
+    ? places.map((place) => {
+        const point = new Point([Number(place.long), Number(place.lat)]);
+        console.log([Number(place.long), Number(place.lat)]);
+        return new Feature(point)
+      })
+    : [new Feature(new Point([-48.2772, -18.9146]))];
+    console.log(mapPoints)
     useEffect(() => {
         const map = new Map({
             target: mapContainerRef.current,
@@ -26,7 +39,7 @@ const MapBlock = () => {
             }),
             new VectorLayer({
                 source: new VectorSource({
-                    features: [new Feature(point)],
+                    features: mapPoints,
                 }),
                 style: {
                     'circle-radius': 9,
@@ -43,8 +56,8 @@ const MapBlock = () => {
         return () => {
             map.setTarget(null);
         };
-    }, []);
-
+    }, [isLoading]);
+    if(isLoading) return <div>Loading...</div>
     return <Container ref={mapContainerRef} />;
 }
 
