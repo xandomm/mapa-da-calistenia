@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     element: <Main />,
   },
   {
-    path: "/novo-lugar",
+    path: "/novo",
     element: <AddPlace />
   }
 ]);
