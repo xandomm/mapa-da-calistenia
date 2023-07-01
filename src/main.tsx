@@ -7,11 +7,16 @@ import {
 } from "react-router-dom";
 import './index.css'
 import Main from './pages/main/index.tsx';
+import AddPlace from './pages/addPlace/index.tsx';
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Main />,
   },
+  {
+    path: "/novo-lugar",
+    element: <AddPlace />
+  }
 ]);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

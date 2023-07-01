@@ -9,7 +9,7 @@ import {useGeographic} from 'ol/proj';
 
 import styled from 'styled-components';
 import 'ol/ol.css';
-import useSWR from 'swr';
+
 import { useGetPlaces } from '../../services/getMaps';
 
 const MapBlock = () => {
