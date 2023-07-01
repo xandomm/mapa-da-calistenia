@@ -48,8 +48,8 @@ const MapBlock = () => {
                 }),
             ],
             view: new View({
-            center: fromLonLat([-48.2772, -18.9146]),
-            zoom: 6,
+            center: [-48.2772, -18.9146],
+            zoom: 12,
             }),
         });
 
