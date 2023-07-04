@@ -2,12 +2,14 @@ import { block } from 'million'
 import { FC } from 'react'
 import { styled } from 'styled-components'
 import MapComponent from '../../components/map'
+import FormComponent from '../../components/form'
 
 const Main = () => {
   return (
     <Container>
       <h1>BEM VINDOS AO MAPA DA CALISTENIA</h1>
       <MapComponent />
+      <FormComponent/>
     </Container>
   )
 }

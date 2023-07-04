@@ -17,9 +17,6 @@ const MapBlock = () => {
     const mapContainerRef = useRef(null);
     const { places, isLoading, isError }  = useGetPlaces();
 
-
-
-
     console.log(places);
 
     const mapPoints = !isLoading
