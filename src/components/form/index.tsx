@@ -25,8 +25,6 @@ const calisthenicsEquipments = [
 
 const FormComponent: React.FC = () => {
   const [formData, setFormData] = useState({
-    lat: 0,
-    long: 0,
     description: '',
     equipments: [''],
     rate: 0,
@@ -68,8 +66,6 @@ const FormComponent: React.FC = () => {
     console.log(formData);
 
     setFormData({
-      lat: 0,
-      long: 0,
       description: '',
       equipments: [''],
       rate: 0,
@@ -86,28 +82,6 @@ const FormComponent: React.FC = () => {
           name="title"
           value={formData.title}
           onChange={handleInputChange}
-        />
-      </label>
-      <br />
-      <label>
-        Latitude:
-        <input
-          type="number"
-          name="lat"
-          value={formData.lat}
-          onChange={handleInputChange}
-          step="0.000001"
-        />
-      </label>
-      <br />
-      <label>
-        Longitude:
-        <input
-          type="number"
-          name="long"
-          value={formData.long}
-          onChange={handleInputChange}
-          step="0.000001"
         />
       </label>
       <br />
