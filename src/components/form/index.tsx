@@ -33,12 +33,7 @@ const FormComponent: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
-    // setFormData((prevFormData) => ({
-    //   ...prevFormData,
-    //   [name]: value,
-    // }));
 
-    // Atualize o estado de acordo com o tipo de input
     if (type === 'checkbox') {
       if (checked) {
         setFormData({
@@ -62,7 +57,6 @@ const FormComponent: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     formData.equipments.shift()
     event.preventDefault();
-    // Handle form submission, e.g., send data to server
     console.log(formData);
 
     setFormData({
@@ -130,5 +124,7 @@ const FormComponent: React.FC = () => {
     </form>
   );
 };
+
+
 
 export default FormComponent;

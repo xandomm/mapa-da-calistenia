@@ -9,7 +9,7 @@ const Main = () => {
     <Container>
       <h1>BEM VINDOS AO MAPA DA CALISTENIA</h1>
       <MapComponent />
-      <FormComponent/>
+
     </Container>
   )
 }
