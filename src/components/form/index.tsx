@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import FormMap from '../formMap';
 
 // interface FormData {
 //   lat: number;
@@ -31,7 +32,7 @@ const FormComponent: React.FC = () => {
     rate: 0,
     title: '',
   });
-
+  const [formMap, setFormMap] = useState({})
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
 
@@ -54,20 +55,22 @@ const FormComponent: React.FC = () => {
       });
     }
   };
+  console.log(formMap)
 function getLatLngFromGoogleMapsUrl(url: string) {
-  // Extrai a parte da URL contendo a latitude e longitude
   const regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
   const matches = url.match(regex);
 
   if (matches && matches.length >= 3) {
     const lat = parseFloat(matches[1]);
-    const lng = parseFloat(matches[2]);
-    return { lat, lng };
+    const long = parseFloat(matches[2]);
+    console.log(lat, long);
+    
+    return setFormMap({ lat, long });
   } else {
     throw new Error('Não foi possível extrair a latitude e longitude da URL fornecida.');
   }
 }
-  console.log(getLatLngFromGoogleMapsUrl('https://www.google.com/maps/place/Pra%C3%A7a+H%C3%A9lvio+Cardoso/@-18.9187098,-48.2297792,17.86z/data=!4m9!1m2!2m1!1smartminas!3m5!1s0x94a44f9048f222d3:0x3083f3e7d625ff1f!8m2!3d-18.918167!4d-48.2279689!16s%2Fg%2F11b6lrtsj3?entry=ttu'))
+ 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     formData.equipments.shift()
     event.preventDefault();
@@ -82,7 +85,12 @@ function getLatLngFromGoogleMapsUrl(url: string) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>      
+    <div>
+
+
+    <Container>
+
+    <FormWrapper onSubmit={handleSubmit}>      
     <InputLabel>
         Titulo:
         <input
@@ -92,16 +100,13 @@ function getLatLngFromGoogleMapsUrl(url: string) {
           onChange={handleInputChange}
         />
     </InputLabel>
+    <br />
     <InputLabel>
-        Link do google maps:
+        Insira aqui a URL do google maps:
         <input
           type="text"
-          name="link"
-          value={formData.title}
-          
-          onChange={handleInputChange}
+          onChange={(e) => getLatLngFromGoogleMapsUrl(e.target.value)}
         />
-        
     </InputLabel>
     <br />
     <InputLabel>
@@ -144,15 +149,44 @@ function getLatLngFromGoogleMapsUrl(url: string) {
         />
     </InputLabel>
     <br />
-    <button type="submit">Enviar</button>
-    </form>
+
+    </FormWrapper>        
+    <MapWrapper>
+      {
+        formMap.lat && formMap.long ? <FormMap lat={formMap.lat} long={formMap.long} /> : null
+      
+      }
+
+    </MapWrapper>
+  
+    </Container>   
+        <button type="submit">Enviar</button>
+     </div>
   );
 };
 
 const InputLabel = styled.div`
 display: flex;
-align-items: column;
+flex-direction: column;
+padding-right: 30px
 
+`
+
+const FormWrapper = styled.div`
+display: flex;
+flex-direction: column;
+width: 47vw;
+margin-left: 30px;
+`
+
+const MapWrapper = styled.div`
+display: flex;
+flex-direction: column;
+width: 50vw 
+`
+const Container = styled.div`
+  display: flex;
+  flex-direction: row; 
 `
 
 export default FormComponent;
