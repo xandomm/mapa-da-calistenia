@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import FormMap from '../formMap';
 import { getLocation, Location } from '../../services/getLocations';
@@ -36,7 +36,8 @@ const FormComponent: React.FC = () => {
     long: 0,
   });
   const [formMap, setFormMap] = useState({});
-  const [selectPlaces, setSelectPlaces] = useState<Location[] | null>()
+  const [selectPlaces, setSelectPlaces] = useState<Location[] | null>();
+  const selectRef = useRef(null)
   
   const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
@@ -54,12 +55,11 @@ const FormComponent: React.FC = () => {
         });
       }
     } else if (name === 'title') {
-
       setFormData({
         ...formData,
         [name]: value,
       });
-      delayedCallback(value)
+      delayedCallback(value);
       // Call the debounced function with the title value
     } else {
       setFormData({
@@ -83,15 +83,14 @@ const FormComponent: React.FC = () => {
     });
   };
 
-
   const delayedCallback = async (value: string) => {
-      const res = await getLocation(value);
-      setSelectPlaces(res)
-      console.log(res);
+    const res = await getLocation(value);
+    setSelectPlaces(res);
+    console.log(res);
   };
 
   function onSelect(id: number) {
-    console.log(id)
+    console.log(id);
     const place = selectPlaces?.filter((place) => place.place_id === id);
     if (place) {
       setFormMap({
@@ -105,112 +104,122 @@ const FormComponent: React.FC = () => {
       setSelectPlaces(null);
     }
   }
-
+  console.log(selectRef)
   return (
     <div>
       <Container>
         <FormWrapper onSubmit={handleSubmit}>
           <InputLabel>
             Nome:
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-            />
-            
-              {selectPlaces && <select name="title" value={formData.title} onChange={(event) => onSelect(Number(event.target.value))}>
-                  <option>
-                    Selecione um local
-                  </option>
+            <input type="text" name="title" value={formData.title} onChange={handleInputChange} />
+            {selectPlaces && (
+              <StyledSelect
+                ref={selectRef}
+                name="title"
+                multiple
+                value={formData.title}
+                onChange={(event) => onSelect(Number(event.target.value))}
+              >
+                <option >
+                  Selecione um local
+                </option>
                 {selectPlaces.map((place) => (
-
-
                   <option key={place.place_id} value={place.place_id}>
                     {place.display_name}
                   </option>
                 ))}
-              </select>}
-            
-          </InputLabel>
-                <br />
-          <InputLabel>
-              Descrição:
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-              />
-          </InputLabel>
-            <br />
-          <InputLabel>
-              Equipamentos:
-              {
-              calisthenicsEquipments.map((equipamento) => (
-
-                <div className='equipments' key={equipamento.id}>
-                  <input
-                    type="checkbox"
-                    name="equipments"
-                    value={equipamento.text}
-                    checked={formData.equipments.includes(`${equipamento.text}`)}
-                    onChange={handleInputChange}
-                  /> {equipamento.text} 
-                </div>
-              ))
-              }
-              
+              </StyledSelect>
+            )}
           </InputLabel>
           <br />
           <InputLabel>
-              Nota:
-              <input
-                type="number"
-                name="rate"
-                value={formData.rate}
-                onChange={handleInputChange}
-                step="0.01"
-              />
+            Descrição:
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+            />
           </InputLabel>
           <br />
-
-          </FormWrapper>        
-          <MapWrapper>
-            {
-              formMap.lat && formMap.long ? <FormMap lat={formMap.lat} long={formMap.long} /> : null
-            
-            }
-
-          </MapWrapper>
-        
-          </Container>   
-              <button type="submit">Enviar</button>
-     </div>
+          <InputLabel>
+            Equipamentos:
+            {calisthenicsEquipments.map((equipamento) => (
+              <div className="equipments" key={equipamento.id}>
+                <input
+                  type="checkbox"
+                  name="equipments"
+                  value={equipamento.text}
+                  checked={formData.equipments.includes(`${equipamento.text}`)}
+                  onChange={handleInputChange}
+                />{' '}
+                {equipamento.text}
+              </div>
+            ))}
+          </InputLabel>
+          <br />
+          <InputLabel>
+            Nota:
+            <input
+              type="number"
+              name="rate"
+              value={formData.rate}
+              onChange={handleInputChange}
+              step="0.01"
+            />
+          </InputLabel>
+          <br />
+        </FormWrapper>
+        <MapWrapper>
+          {formMap.lat && formMap.long ? <FormMap lat={formMap.lat} long={formMap.long} /> : null}
+        </MapWrapper>
+      </Container>
+      <StyledButton type="submit">Enviar</StyledButton>
+    </div>
   );
 };
 
 const InputLabel = styled.div`
-display: flex;
-flex-direction: column;
-padding-right: 30px
-`
+  display: flex;
+  flex-direction: column;
+  padding-right: 30px;
+`;
 
 const FormWrapper = styled.div`
-display: flex;
-flex-direction: column;
-width: 47vw;
-margin-left: 30px;
-`
+  display: flex;
+  flex-direction: column;
+  width: 47vw;
+  margin-left: 30px;
+`;
 
 const MapWrapper = styled.div`
-display: flex;
-flex-direction: column;
-width: 50vw 
-`
+  display: flex;
+  flex-direction: column;
+  width: 50vw;
+`;
+
 const Container = styled.div`
   display: flex;
-  flex-direction: row; 
-`
+  flex-direction: row;
+`;
+
+const StyledSelect = styled.select`
+  width: 70vw;
+
+  font-size: 16px;
+  overflow: auto;
+  border-radius: 5px;
+`;
+
+const StyledButton = styled.button`
+  margin-top: 10px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+`;
 
 export default FormComponent;
