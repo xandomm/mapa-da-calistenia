@@ -14,7 +14,7 @@ export interface Location {
     importance: number;
   }
 
-export async function useGetLocation(name: string) {
+export async function getLocation(name: string) {
     const apiUrl = `https://geocode.maps.co/search?q={${name}}`;
 
     const fetcher = async (url: string) => {
@@ -23,11 +23,7 @@ export async function useGetLocation(name: string) {
         return data;
     };
 
-    const { data, error } = useSWR(apiUrl, fetcher);
+    const response = fetcher(apiUrl);
 
-    return {
-        places: data,
-        isLoading: !error && !data,
-        isError: error,
-    };
+    return response;
 }

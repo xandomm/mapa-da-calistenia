@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import FormMap from '../formMap';
-import { useGetLocation } from '../../services/getLocations';
+import { getLocation, Location } from '../../services/getLocations';
 
 interface FormData {
   lat: number;
@@ -36,9 +36,8 @@ const FormComponent: React.FC = () => {
     long: 0,
   });
   const [formMap, setFormMap] = useState({});
-
-  const debouncedGetLatLng = debounce(useGetLocation, 500);
-
+  const [selectPlaces, setSelectPlaces] = useState<Location[] | null>()
+  
   const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
 
@@ -55,11 +54,13 @@ const FormComponent: React.FC = () => {
         });
       }
     } else if (name === 'title') {
+
       setFormData({
         ...formData,
         [name]: value,
       });
-      console.log(await delayedCallback(value)); // Call the debounced function with the title value
+      delayedCallback(value)
+      // Call the debounced function with the title value
     } else {
       setFormData({
         ...formData,
@@ -82,24 +83,28 @@ const FormComponent: React.FC = () => {
     });
   };
 
-  const getLatLngFromGoogleMapsUrl = (url: string) => {
-    // Perform the necessary logic to extract the lat and long values from the Google Maps URL
-    // Replace the following code with your implementation
-    const lat = 0; // Replace with the extracted latitude value
-    const long = 0; // Replace with the extracted longitude value
 
-    setFormMap({
-      lat,
-      long,
-    });
-  };
   const delayedCallback = async (value: string) => {
-    setTimeout(async () => {
-      const res = await useGetLocation(value);
+      const res = await getLocation(value);
+      setSelectPlaces(res)
       console.log(res);
-    }, 500);
   };
 
+  function onSelect(id: number) {
+    console.log(id)
+    const place = selectPlaces?.filter((place) => place.place_id === id);
+    if (place) {
+      setFormMap({
+        lat: place[0].lat,
+        long: place[0].lon,
+      });
+      setFormData({
+        ...formData,
+        title: place[0].display_name,
+      });
+      setSelectPlaces(null);
+    }
+  }
 
   return (
     <div>
@@ -107,19 +112,26 @@ const FormComponent: React.FC = () => {
         <FormWrapper onSubmit={handleSubmit}>
           <InputLabel>
             Nome:
-            Nome:
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
             />
-            <select name="title" value={formData.title} onChange={handleInputChange}>
-              <option value="">Select an option</option>
-              <option value="Option 1">Option 1</option>
-              <option value="Option 2">Option 2</option>
-              {/* Add more options as needed */}
-            </select>
+            
+              {selectPlaces && <select name="title" value={formData.title} onChange={(event) => onSelect(Number(event.target.value))}>
+                  <option>
+                    Selecione um local
+                  </option>
+                {selectPlaces.map((place) => (
+
+
+                  <option key={place.place_id} value={place.place_id}>
+                    {place.display_name}
+                  </option>
+                ))}
+              </select>}
+            
           </InputLabel>
                 <br />
           <InputLabel>
@@ -178,24 +190,10 @@ const FormComponent: React.FC = () => {
   );
 };
 
-
-
-function debounce(callback: (...args: any[]) => void, delay: number) {
-  let timerId: NodeJS.Timeout;
-
-  return function debouncedFunction(...args: any[]) {
-    clearTimeout(timerId);
-
-    timerId = setTimeout(() => {
-      callback.apply(this, args);
-    }, delay);
-  };
-}
 const InputLabel = styled.div`
 display: flex;
 flex-direction: column;
 padding-right: 30px
-
 `
 
 const FormWrapper = styled.div`
